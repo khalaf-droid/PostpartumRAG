@@ -12,9 +12,22 @@ const app = express();
 
 // Security Middleware
 app.use(helmet());
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'https://postpartum-frontend.onrender.com',
+  'http://localhost:4200',
+  'http://127.0.0.1:4200'
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:4200',
-  credentials: true, // Allow cookies to be sent
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes(origin.replace(/\/$/, ''))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
 
 // Parsers

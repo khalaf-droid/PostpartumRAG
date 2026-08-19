@@ -15,11 +15,13 @@ export interface GuidelineDocument {
   isActive: boolean;
 }
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class EvidenceApiService {
-  private readonly apiUrl = 'http://localhost:3000/api/evidence';
+  private readonly apiUrl = `${environment.apiUrl}/evidence`;
   
   guidelines = signal<GuidelineDocument[]>([]);
   isLoading = signal<boolean>(false);

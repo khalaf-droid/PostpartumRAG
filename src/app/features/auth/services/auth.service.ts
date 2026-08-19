@@ -18,11 +18,13 @@ export interface AuthResponse {
   };
 }
 
+import { environment } from '../../../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:3000/api/auth';
+  private readonly apiUrl = `${environment.apiUrl}/auth`;
   
   currentUser = signal<User | null>(null);
   isAuthenticated = signal<boolean>(false);

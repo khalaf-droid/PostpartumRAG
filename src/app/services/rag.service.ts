@@ -3,9 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { RagQueryResponse, EvidenceSource, RagConfidence } from '../models/rag.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({ providedIn: 'root' })
 export class RagService {
-  private apiUrl = 'http://localhost:3000/api/chat/query';
+  private apiUrl = `${environment.apiUrl}/chat/query`;
   readonly isLoading = signal(false);
 
   constructor(private http: HttpClient) {}
@@ -52,7 +54,7 @@ export class RagService {
   async getSessions(): Promise<any[]> {
     try {
       const res = await firstValueFrom(
-        this.http.get<any>('http://localhost:3000/api/chat/sessions', { withCredentials: true })
+        this.http.get<any>(`${environment.apiUrl}/chat/sessions`, { withCredentials: true })
       );
       return res?.data?.sessions || [];
     } catch (err) {
@@ -64,7 +66,7 @@ export class RagService {
   async getSessionMessages(sessionId: string): Promise<any[]> {
     try {
       const res = await firstValueFrom(
-        this.http.get<any>(`http://localhost:3000/api/chat/sessions/${sessionId}`, { withCredentials: true })
+        this.http.get<any>(`${environment.apiUrl}/chat/sessions/${sessionId}`, { withCredentials: true })
       );
       return res?.data?.messages || [];
     } catch (err) {
@@ -76,7 +78,7 @@ export class RagService {
   async deleteSession(sessionId: string): Promise<boolean> {
     try {
       await firstValueFrom(
-        this.http.delete<any>(`http://localhost:3000/api/chat/sessions/${sessionId}`, { withCredentials: true })
+        this.http.delete<any>(`${environment.apiUrl}/chat/sessions/${sessionId}`, { withCredentials: true })
       );
       return true;
     } catch (err) {

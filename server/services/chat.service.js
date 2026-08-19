@@ -7,67 +7,57 @@
  */
 
 import http from 'http';
+import https from 'https';
 
 class ChatService {
   async processQuery(question, previousMessages = [], options = {}) {
-    return new Promise((resolve, reject) => {
-      const startTime = Date.now();
-      const postData = JSON.stringify({
-        question: question,
-        top_k: 8
+    const startTime = Date.now();
+    
+    // استخدم رابط الـ RAG من المتغيرات البيئية أو استخدم اللوكال هوست كبديل
+    const ragApiUrl = process.env.RAG_API_URL || 'http://127.0.0.1:8000/ask';
+    
+    try {
+      const response = await fetch(ragApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: question,
+          top_k: 8
+        })
       });
 
-      const req = http.request(
-        {
-          hostname: '127.0.0.1',
-          port: 8000,
-          path: '/ask',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(postData)
-          }
-        },
-        (res) => {
-          let body = '';
-          res.on('data', chunk => body += chunk);
-          res.on('end', () => {
-            if (res.statusCode < 200 || res.statusCode >= 300) {
-              return reject(new Error(`RAG API responded with status: ${res.statusCode} - ${body}`));
-            }
-            try {
-              const data = JSON.parse(body);
-              const latencyMs = Date.now() - startTime;
-              
-              const evidence = (data.sources || []).map(source => ({
-                title: source.source,
-                section: source.section || 'N/A',
-                documentId: source.source,
-                page: source.page,
-                excerpt: source.excerpt || '', 
-                relevanceScore: source.similarity
-              }));
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`RAG API responded with status: ${response.status} - ${errorText}`);
+      }
 
-              resolve({
-                answer: data.answer,
-                evidence: evidence,
-                metadata: {
-                  confidence: data.confidence,
-                  latencyMs,
-                  source: "python-rag-api"
-                }
-              });
-            } catch (err) {
-              reject(err);
-            }
-          });
+      const data = await response.json();
+      const latencyMs = Date.now() - startTime;
+      
+      const evidence = (data.sources || []).map(source => ({
+        title: source.source,
+        section: source.section || 'N/A',
+        documentId: source.source,
+        page: source.page,
+        excerpt: source.excerpt || '', 
+        relevanceScore: source.similarity
+      }));
+
+      return {
+        answer: data.answer,
+        evidence: evidence,
+        metadata: {
+          confidence: data.confidence,
+          latencyMs,
+          source: "python-rag-api"
         }
-      );
-
-      req.on('error', (e) => reject(e));
-      req.write(postData);
-      req.end();
-    });
+      };
+    } catch (err) {
+      console.error("Error communicating with RAG pipeline:", err);
+      throw err;
+    }
   }
 }
 

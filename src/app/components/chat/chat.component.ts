@@ -22,6 +22,8 @@ import {
   RagQueryResponse,
   EvidenceSource,
 } from '../../models/rag.model';
+import { AuthService } from '../../features/auth/services/auth.service';
+import { Router } from '@angular/router';
 
 export type TurnStatus = 'loading' | 'success' | 'error';
 
@@ -43,6 +45,7 @@ export interface ConversationTurn {
   errorType?: ErrorType;
   customErrorMessage?: string;
   loadingStep: number;
+  retryCount?: number;
 }
 
 @Component({
@@ -76,6 +79,18 @@ export class ChatComponent implements OnInit {
   sessions = signal<any[]>([]);
   activeSessionId = signal<string | null>(null);
 
+  isMobileSidebarOpen = signal(false);
+
+  get currentUser() { return this.auth.currentUser; }
+  
+  get userInitials() {
+     const user = this.currentUser();
+     if (!user || !user.fullName) return '';
+     const parts = user.fullName.split(' ');
+     if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+     return user.fullName.substring(0, 2).toUpperCase();
+  }
+
   get suggestions(): string[] {
     if (this.i18n.isRtl()) {
       return [
@@ -96,7 +111,9 @@ export class ChatComponent implements OnInit {
     public rateLimit: RateLimitService,
     public i18n: TranslationService,
     private el: ElementRef,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private auth: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -108,6 +125,10 @@ export class ChatComponent implements OnInit {
   async loadSessions() {
     const list = await this.rag.getSessions();
     this.sessions.set(list);
+  }
+
+  toggleSidebar() {
+    this.isMobileSidebarOpen.update(v => !v);
   }
 
   newSession() {
@@ -225,6 +246,76 @@ export class ChatComponent implements OnInit {
     this.conversation.update(prev => [...prev, newTurn]);
     this.scrollToBottom();
 
+    const stepTimer = setInterval(() => {
+      this.conversation.update(prev => {
+        return prev.map(t => {
+          if (t.id === turnId && t.status === 'loading') {
+            return { ...t, loadingStep: t.loadingStep < 4 ? t.loadingStep + 1 : t.loadingStep };
+          }
+          return t;
+        });
+      });
+    }, 320);
+
+    try {
+      const response = await this.rag.query(question, this.activeSessionId() || undefined);
+      clearInterval(stepTimer);
+
+      if ((response as any).sessionId && !this.activeSessionId()) {
+        this.activeSessionId.set((response as any).sessionId);
+        this.loadSessions();
+      }
+
+      if (response.answer) {
+        this.conversation.update(prev => prev.map(t => 
+          t.id === turnId ? { ...t, status: 'success', response, isTyping: true } : t
+        ));
+        await this.streamAnswer(turnId, response.answer);
+      } else {
+        this.conversation.update(prev => prev.map(t => 
+          t.id === turnId ? { ...t, status: 'error', response, errorType: 'NO_EVIDENCE_FOUND' } : t
+        ));
+      }
+    } catch (e: any) {
+      clearInterval(stepTimer);
+      const backendError = e.error?.message || e.error?.stack || e.message;
+      this.conversation.update(prev => prev.map(t => 
+        t.id === turnId ? { ...t, status: 'error', errorType: 'SERVICE_UNAVAILABLE', customErrorMessage: backendError } : t
+      ));
+    }
+    this.scrollToBottom();
+  }
+
+  onErrorPrimaryAction(turn: ConversationTurn) {
+    if (turn.errorType === 'SERVICE_UNAVAILABLE' || turn.errorType === 'RATE_LIMITED') {
+      const retries = turn.retryCount || 0;
+      if (retries >= 2) return;
+      
+      this.conversation.update(prev => prev.map(t => {
+        if (t.id === turn.id) {
+          return { ...t, status: 'loading', loadingStep: 1, retryCount: retries + 1, errorType: undefined, customErrorMessage: undefined };
+        }
+        return t;
+      }));
+      this.resubmitQuery(turn.id, turn.question);
+    } else if (turn.errorType === 'QUERY_OUTSIDE_SCOPE' || turn.errorType === 'NO_EVIDENCE_FOUND') {
+      this.draft.set(turn.question);
+      if (isPlatformBrowser(this.platformId)) {
+        setTimeout(() => {
+          const input = this.el.nativeElement.querySelector('.composer input') as HTMLInputElement;
+          if (input) input.focus();
+        }, 50);
+      }
+    } else if (turn.errorType === 'HALLUCINATION_RISK') {
+      this.router.navigate(['/evidence']);
+    }
+  }
+
+  onErrorSecondaryAction(turn: ConversationTurn) {
+    this.router.navigate(['/evidence']);
+  }
+
+  async resubmitQuery(turnId: string, question: string) {
     const stepTimer = setInterval(() => {
       this.conversation.update(prev => {
         return prev.map(t => {

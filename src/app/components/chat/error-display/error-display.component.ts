@@ -65,9 +65,10 @@ export interface ErrorConfig {
             *ngIf="config.actionLabel" 
             type="button" 
             class="btn-action primary" 
+            [disabled]="disablePrimary"
             (click)="onPrimaryAction()"
           >
-            {{ config.actionLabel }}
+            {{ primaryActionLabelOverride || config.actionLabel }}
           </button>
           
           <button 
@@ -107,9 +108,9 @@ export interface ErrorConfig {
       }
 
       &.NO_EVIDENCE_FOUND, &.HALLUCINATION_RISK {
-        border-color: rgba(180, 140, 220, 0.35);
-        background: rgba(251, 248, 254, 0.9);
-        .error-icon-wrapper { color: #6b5b95; background: rgba(180, 140, 220, 0.2); }
+        border-color: rgba(196, 90, 90, 0.35);
+        background: rgba(253, 246, 246, 0.9);
+        .error-icon-wrapper { color: #a94442; background: rgba(196, 90, 90, 0.12); }
       }
 
       &.RATE_LIMITED {
@@ -176,12 +177,16 @@ export interface ErrorConfig {
       transition: all 0.2s ease;
 
       &.primary {
-        background: var(--ink, #12151a);
-        color: #ffffff;
+        background: var(--accent-teal, #2FD4C4);
+        color: #12151a;
         border: none;
 
         &:hover {
-          background: #2a313b;
+          opacity: 0.9;
+        }
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
       }
 
@@ -200,6 +205,8 @@ export interface ErrorConfig {
 export class ErrorDisplayComponent {
   @Input() type: ErrorType = 'NO_EVIDENCE_FOUND';
   @Input() customDescription?: string;
+  @Input() disablePrimary: boolean = false;
+  @Input() primaryActionLabelOverride?: string;
 
   @Output() primaryAction = new EventEmitter<void>();
   @Output() secondaryAction = new EventEmitter<void>();

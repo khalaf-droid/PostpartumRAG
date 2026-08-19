@@ -175,16 +175,21 @@
 </section>
 
 <section class="hiw" id="how">
-  <div class="wrap">
+  <div class="wrap hiw-layout">
     
-    <!-- Section Header -->
-    <div class="hiw-head reveal">
-      <div class="hiw-eyebrow">PROCESS</div>
-      <h2 class="hiw-title">{{ 'landing.process_title' | translate }}</h2>
-      <p class="hiw-sub" style="color: var(--muted-light, rgba(246,244,238,.62)); font-size: 0.95rem; margin-top: 0.4rem;">
-        {{ 'landing.process_subtitle' | translate }}
-      </p>
+    <div class="hiw-visual reveal-scroll">
+      <img src="assets/742e218e-1202-45e5-8ef1-8876b3f.png" [alt]="'landing.brain_heart_alt' | translate" class="hiw-img">
     </div>
+
+    <div class="hiw-content">
+      <!-- Section Header -->
+      <div class="hiw-head reveal">
+        <div class="hiw-eyebrow">PROCESS</div>
+        <h2 class="hiw-title">{{ 'landing.process_title' | translate }}</h2>
+        <p class="hiw-sub" style="color: var(--muted-light, rgba(246,244,238,.62)); font-size: 0.95rem; margin-top: 0.4rem;">
+          {{ 'landing.process_subtitle_updated' | translate }}
+        </p>
+      </div>
 
     <!-- 4-Stage Pipeline -->
     <div class="hiw-pipeline reveal">
@@ -263,7 +268,7 @@
       </div>
 
     </div>
-
+    </div>
   </div>
 </section>
 
@@ -311,6 +316,19 @@
   </div>
 </section>
 
+<section class="selfcare">
+  <div class="wrap selfcare-inner">
+    <div class="selfcare-copy reveal">
+      <div class="selfcare-eyebrow">{{ 'landing.selfcare_eyebrow' | translate }}</div>
+      <h2 class="selfcare-title">{{ 'landing.selfcare_title' | translate }}</h2>
+      <p class="selfcare-desc">{{ 'landing.selfcare_desc' | translate }}</p>
+    </div>
+    <div class="selfcare-visual reveal-scroll">
+      <img src="assets/Gemini_Generated_Image_cbme2ycbme2ycb.jpeg" [alt]="'landing.mother_selfcare_alt' | translate" class="selfcare-img">
+    </div>
+  </div>
+</section>
+
 <section class="final-cta" id="workspace">
   <!-- Abstract Evidence Trace Background Motif -->
   <div class="final-bg-trace" aria-hidden="true">
@@ -326,7 +344,7 @@
 
   <div class="wrap final-inner">
     <div class="final-eyebrow reveal">{{ 'nav.workspace' | translate | uppercase }}</div>
-    <h2 class="reveal">{{ 'landing.cta_banner_title' | translate }}</h2>
+    <h2 class="reveal">{{ 'landing.cta_banner_title_updated' | translate }}</h2>
     <p class="final-sub reveal">{{ 'hero.subtitle' | translate }}</p>
     
     <div class="final-trust-cue reveal">

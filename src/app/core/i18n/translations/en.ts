@@ -80,6 +80,13 @@ export const EN_TRANSLATIONS = {
     evidence_section_q: '"What are the warning signs of postpartum psychosis?"',
     evidence_section_ans: 'Postpartum psychosis typically emerges within the first two weeks after birth, presenting as rapid mood swings, confusion, and disorganized thinking',
     evidence_section_ans_cont: '. Delusional beliefs about the baby and hallucinations are considered emergency indicators requiring immediate specialist assessment',
+    process_subtitle_updated: 'Every answer is a bridge between what science knows and what you\'re feeling right now.',
+    selfcare_eyebrow: 'GROUNDED IN YOUR REALITY',
+    selfcare_title: 'You\'re not just a data point. You\'re a mother figuring it out, one question at a time.',
+    selfcare_desc: 'Behind every cited answer is the understanding that postpartum life is messy, tiring, and real — and that deserves evidence, not guesswork.',
+    cta_banner_title_updated: 'Every question deserves a citation.',
+    brain_heart_alt: 'Silhouette of a woman with a purple brain and a heart, representing the link between clinical and emotional care.',
+    mother_selfcare_alt: 'Mother holding a laughing baby, surrounded by self-care objects.'
   },
   workspace: {
     tagline: 'Grounded, not guessed.',

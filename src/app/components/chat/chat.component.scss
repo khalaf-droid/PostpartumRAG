@@ -3,6 +3,19 @@
   width: 100%;
   height: calc(100vh - 80px);
   margin-top: 80px;
+
+  --accent-teal: #2FD4C4;
+  --accent-purple: #8B7FC7;
+  --suggestion-chip-bg: rgba(139, 127, 199, 0.10);
+  --suggestion-chip-border: rgba(139, 127, 199, 0.25);
+  --suggestion-chip-text: #4a4266;
+}
+
+@media (max-width: 600px) {
+  :host {
+    margin-top: 130px;
+    height: calc(100vh - 130px);
+  }
 }
 
 .app-layout {
@@ -32,8 +45,8 @@
   font-family: var(--font-body);
   font-size: 0.9rem;
   font-weight: 600;
-  color: #fff;
-  background: var(--plum);
+  color: #12151a;
+  background: var(--accent-teal);
   border: none;
   border-radius: 8px;
   padding: 0.75rem;
@@ -43,6 +56,21 @@
   &:hover {
     opacity: 0.9;
   }
+}
+
+.user-avatar-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-purple);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
 .session-list {
@@ -242,14 +270,14 @@
   font-size: 0.82rem;
   padding: 0.55rem 0.9rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--plum) 30%, transparent);
-  background: var(--blush);
-  color: var(--ink);
+  border: 1px solid var(--suggestion-chip-border);
+  background: var(--suggestion-chip-bg);
+  color: var(--suggestion-chip-text);
   cursor: pointer;
   transition: transform 0.15s ease, background 0.15s ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--blush) 60%, var(--sage) 15%);
+    background: rgba(139, 127, 199, 0.18);
     transform: translateY(-1px);
   }
 }
@@ -686,8 +714,8 @@
   padding: 0 1.4rem;
   border-radius: 14px;
   border: none;
-  background: var(--plum);
-  color: #fff;
+  background: var(--accent-teal);
+  color: #12151a;
   cursor: pointer;
   min-width: 76px;
   transition: opacity 0.15s ease;
@@ -798,53 +826,72 @@
   color: color-mix(in srgb, var(--ink) 55%, transparent);
 }
 
+.mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--paper);
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  
+  .mobile-brand {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+}
+.btn-hamburger {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;
   }
   
-  .sidebar {
-    width: 100%;
-    height: auto;
-    flex-direction: column;
-    border-right: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-  }
-  
-  .sidebar-header {
-    padding: 1rem;
+  .mobile-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
   }
   
-  .btn-new-chat {
-    width: auto;
-    padding: 0.5rem 1rem;
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 0;
+    z-index: 400;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
   
-  .session-list {
-    flex-direction: row;
-    padding: 0 1rem 1rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 0.5rem;
-    white-space: nowrap;
+  :host-context([dir="rtl"]) .sidebar { transform: translateX(100%); }
+  :host-context([dir="ltr"]) .sidebar { transform: translateX(-100%); }
+  
+  .sidebar.open {
+    transform: translateX(0) !important;
   }
   
-  .session-item {
-    padding: 0.5rem 1rem;
-    border-radius: 99px;
-    background: color-mix(in srgb, var(--ink) 4%, transparent);
-  }
-  
-  .session-item.active {
-    background: color-mix(in srgb, var(--plum) 10%, transparent);
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(18, 21, 26, 0.4);
+    z-index: 399;
   }
   
   .workspace-shell {
     padding: 1.5rem 1rem;
+  }
+  
+  .empty-state-intro {
+    max-height: 50vh;
+    justify-content: center;
+  }
+  
+  .suggestions {
+    flex-direction: column;
   }
   
   .question-text {

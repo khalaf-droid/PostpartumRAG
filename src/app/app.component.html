@@ -1,7 +1,8 @@
 <nav class="nav" id="nav" [class.scrolled]="isScrolled">
   <div class="wrap nav-inner">
-    <a routerLink="/" class="nav-logo">
-      <span class="dot"></span>PostpartumHeal
+    <a routerLink="/" class="nav-logo" style="display: flex; align-items: center; gap: 0.6rem;">
+      <img src="assets/logo.png" alt="Logo" style="height: 28px; width: 28px; border-radius: 50%; object-fit: cover;">
+      PostpartumHeal
     </a>
     <div class="nav-links">
       <a href="#how" (click)="scrollTo('how', $event)">{{
@@ -60,7 +61,10 @@
   <div class="wrap">
     <div class="footer-top">
       <div>
-        <div class="footer-brand">PostpartumHeal</div>
+        <div class="footer-brand" style="display: flex; align-items: center; gap: 0.6rem;">
+          <img src="assets/logo.png" alt="Logo" style="height: 32px; width: 32px; border-radius: 50%; object-fit: cover;">
+          PostpartumHeal
+        </div>
         <p class="footer-desc">{{ "footer.brand_desc" | translate }}</p>
       </div>
       <div class="footer-links">

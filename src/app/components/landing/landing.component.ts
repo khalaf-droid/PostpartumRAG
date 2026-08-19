@@ -39,6 +39,17 @@ export class LandingComponent implements AfterViewInit {
 
       const reveals = this.el.nativeElement.querySelectorAll('.reveal');
       reveals.forEach((el: Element) => io.observe(el));
+
+      const ioImage = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.3 });
+
+      const imageReveals = this.el.nativeElement.querySelectorAll('.reveal-scroll');
+      imageReveals.forEach((el: Element) => ioImage.observe(el));
     }
   }
 

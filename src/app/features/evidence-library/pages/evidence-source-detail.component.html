@@ -1,0 +1,105 @@
+<div class="evidence-shell">
+  <!-- Brand Header -->
+  <header class="brand-header">
+    <div class="brand-title-group">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1>PostpartumRAG</h1>
+        <p class="tagline">{{ 'workspace.tagline' | translate }}</p>
+      </div>
+    </div>
+  </header>
+
+  @if (source()) {
+    <div class="detail-container">
+      <!-- Detail Header -->
+      <section class="detail-header">
+        <div class="org-badge">{{ source()!.organization }}</div>
+        <h2 class="doc-title">{{ source()!.documentName }}</h2>
+        <p class="doc-subtitle">{{ source()!.title }}</p>
+      </section>
+
+      <!-- Metadata & Traceability -->
+      <div class="info-grid">
+        <section class="meta-card">
+          <h3>{{ 'evidence.document_id' | translate }}</h3>
+          <div class="meta-row">
+            <span class="meta-label">{{ 'workspace.drawer_doc' | translate }}</span>
+            <span class="meta-val">{{ source()!.type }}</span>
+          </div>
+          @if (source()!.sourceUrl) {
+            <div class="meta-row">
+              <span class="meta-label">Source URL</span>
+              <a [href]="source()!.sourceUrl" target="_blank" rel="noopener" class="external-link">
+                {{ 'workspace.drawer_open' | translate }}
+              </a>
+            </div>
+          }
+        </section>
+
+        <section class="trace-card">
+          <h3>{{ 'landing.feature3_title' | translate }}</h3>
+          <div class="trace-flow">
+            <div class="trace-step">{{ 'workspace.drawer_doc' | translate }}</div>
+            <div class="trace-arrow">↓</div>
+            <div class="trace-step">{{ 'workspace.drawer_section' | translate }}</div>
+            <div class="trace-arrow">↓</div>
+            <div class="trace-step">{{ 'workspace.drawer_page' | translate }}</div>
+            <div class="trace-arrow">↓</div>
+            <div class="trace-step">Chunk</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sections List -->
+      <section class="sections-container">
+        <h3>{{ 'evidence.sections_count' | translate }}</h3>
+        <div class="sections-list">
+          @for (sec of source()!.sections; track sec.id) {
+            <div class="section-item" [class.expanded]="isExpanded(sec.id)">
+              <button class="section-header" (click)="toggleSection(sec.id)">
+                <div class="section-title-group">
+                  <span class="chevron"></span>
+                  <span class="sec-title">{{ sec.title }}</span>
+                </div>
+                <div class="sec-meta">
+                  <span class="page-badge">{{ 'workspace.drawer_page' | translate }} {{ sec.pageNumber }}</span>
+                  @if (sec.indexed) {
+                    <span class="indexed-badge">Indexed</span>
+                  }
+                </div>
+              </button>
+              
+              @if (isExpanded(sec.id)) {
+                <div class="section-preview">
+                  <div class="preview-header">
+                    <span class="preview-label">{{ 'workspace.drawer_excerpt' | translate }}</span>
+                    <span class="chunk-id">Chunk ID: {{ source()!.id }}-{{ sec.id }}</span>
+                  </div>
+                  <div class="excerpt-box">
+                    "{{ sec.excerpt }}"
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-section">
+        <a routerLink="/workspace" class="btn-primary">
+          <span>{{ 'hero.cta_primary' | translate }}</span>
+          <span class="arrow">{{ i18n.isRtl() ? '←' : '→' }}</span>
+        </a>
+      </section>
+    </div>
+  } @else {
+    <div class="not-found">
+      <p>{{ 'workspace.no_evidence_title' | translate }}</p>
+      <a routerLink="/evidence" class="btn-back">
+        <span>{{ 'evidence.back_to_library' | translate }}</span>
+      </a>
+    </div>
+  }
+</div>

@@ -1,0 +1,208 @@
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-title-group" style="padding: 0; margin-bottom: 1rem;">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <h1 style="font-size: 1.1rem;">PostpartumRAG</h1>
+          <p class="tagline" style="font-size: 0.75rem;">{{ 'workspace.tagline' | translate }}</p>
+        </div>
+      </div>
+      <button type="button" class="btn-new-chat" (click)="newSession()">
+        + {{ i18n.isRtl() ? 'محادثة جديدة' : 'New Chat' }}
+      </button>
+    </div>
+    
+    <div class="session-list">
+      @for (session of sessions(); track session._id) {
+        <div class="session-item" [class.active]="activeSessionId() === session._id" (click)="loadSession(session._id)">
+          <span class="session-title">{{ session.title || (i18n.isRtl() ? 'محادثة جديدة' : 'New Chat') }}</span>
+          <button type="button" class="btn-delete" (click)="deleteSession(session._id); $event.stopPropagation()" aria-label="Delete chat">✕</button>
+        </div>
+      }
+    </div>
+  </aside>
+
+  <!-- Main Chat Area -->
+  <div class="main-scroll-area">
+  <main class="workspace-shell">
+    <!-- Toast Notification Feedback -->
+    <div *ngIf="toastMessage()" class="toast-notification" role="status" aria-live="polite">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+      <span>{{ toastMessage() }}</span>
+    </div>
+
+  <!-- CONTINUOUS CHAT FEED -->
+  <div class="conversation-feed">
+    @if (conversation().length === 0) {
+      <div class="empty-state-intro">
+        <p class="welcome-text">{{ 'workspace.intro' | translate }}</p>
+        <div class="suggestions">
+          @for (s of suggestions; track s) {
+            <button type="button" class="chip" (click)="useSuggestion(s)" [attr.aria-label]="'Use suggestion: ' + s">{{ s }}</button>
+          }
+        </div>
+      </div>
+    }
+
+    @for (turn of conversation(); track turn.id) {
+      <div class="turn-container">
+        
+        <!-- Clinical Question Header -->
+        <div class="question-box">
+          <span class="label">{{ 'workspace.question_label' | translate }}</span>
+          <h2 class="question-text">"{{ turn.question }}"</h2>
+        </div>
+
+        @if (turn.status === 'loading') {
+          <app-query-progress-indicator [currentStep]="turn.loadingStep"></app-query-progress-indicator>
+        }
+
+        @if (turn.status === 'error' && turn.errorType) {
+          <app-error-display
+            [type]="turn.errorType"
+            [customDescription]="turn.customErrorMessage || undefined"
+          ></app-error-display>
+        }
+
+        @if (turn.status === 'success' && turn.response) {
+          <!-- Evidence Grounded Answer Box -->
+          <div class="answer-box">
+            <div class="answer-header">
+              <div class="header-left">
+                <span class="label">{{ 'workspace.answer_label' | translate }}</span>
+                <span class="grounded-badge">{{ 'workspace.grounded_tag' | translate }}</span>
+              </div>
+              <div class="action-buttons">
+                <button type="button" class="btn-icon-action" (click)="copyAnswer(turn)" [title]="'workspace.copy' | translate">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>{{ 'workspace.copy' | translate }}</span>
+                </button>
+                <button type="button" class="btn-icon-action" (click)="exportMarkdown(turn)" [title]="'workspace.export' | translate">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>{{ 'workspace.export' | translate }}</span>
+                </button>
+              </div>
+            </div>
+
+            <p class="answer-body">
+              @for (seg of turn.segments; track $index) {
+                @if (!seg.isCitation) {
+                  <span>{{ seg.text }}</span>
+                } @else {
+                  <button type="button" class="cite-badge" [class.active]="highlightedSourceIndex() === seg.citationIndex" (click)="selectCitation(seg.citationIndex!, turn.id)">
+                    {{ seg.text }}
+                  </button>
+                }
+              }
+              @if (turn.isTyping) {
+                <span class="caret" aria-hidden="true"></span>
+              }
+            </p>
+          </div>
+
+          <!-- Evidence Section -->
+          @if (turn.response.sources && turn.response.sources.length > 0) {
+            <div class="evidence-section">
+              <div class="section-head">
+                <h3>{{ 'workspace.evidence_title' | translate }}</h3>
+                <p class="subtitle">{{ 'workspace.evidence_subtitle' | translate }}</p>
+              </div>
+
+              <div class="evidence-grid">
+                @for (src of turn.response.sources; track src.id || $index; let i = $index) {
+                  <div [id]="'src-' + turn.id + '-' + (i + 1)">
+                    <app-citation-card
+                      [source]="src"
+                      [index]="i + 1"
+                      [isHighlighted]="highlightedSourceIndex() === i + 1"
+                      (viewSource)="openDrawer($event)"
+                    />
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+    
+    <div #scrollAnchor class="scroll-anchor"></div>
+  </div>
+
+  <!-- INPUT COMPOSER & RATE LIMIT FEEDBACK -->
+  <form class="composer" (ngSubmit)="ask()">
+    <div class="input-container">
+      <input
+        type="text"
+        [placeholder]="'workspace.placeholder' | translate"
+        [ngModel]="draft()"
+        (ngModelChange)="draft.set($event)"
+        name="question"
+        autocomplete="off"
+        aria-label="Clinical question input"
+      />
+      <span *ngIf="rateLimit.isRateLimited()" class="cooldown-badge" aria-live="polite">
+        {{ 'workspace.wait' | translate }} {{ rateLimit.cooldownRemainingSeconds() }}s
+      </span>
+    </div>
+    <button type="submit" [disabled]="isChatLoading() || !draft().trim() || rateLimit.isRateLimited()">
+      @if (isChatLoading()) {
+        <span class="spinner" aria-hidden="true"></span>
+      } @else {
+        {{ 'workspace.ask' | translate }}
+      }
+    </button>
+  </form>
+
+  <!-- SOURCE DETAIL DRAWER -->
+  @if (selectedDrawerSource()) {
+    <div class="drawer-backdrop" (click)="closeDrawer()"></div>
+    <div class="drawer-panel" role="dialog" aria-labelledby="drawer-title" aria-modal="true">
+      <div class="drawer-header">
+        <h3 id="drawer-title">{{ 'workspace.drawer_title' | translate }}</h3>
+        <button type="button" class="drawer-close" (click)="closeDrawer()" aria-label="Close detail drawer">✕</button>
+      </div>
+      <div class="drawer-content">
+        <div class="meta-group">
+          <span class="meta-label">{{ 'workspace.drawer_doc' | translate }}</span>
+          <span class="meta-val highlight">{{ selectedDrawerSource()?.documentName || selectedDrawerSource()?.document_name }}</span>
+        </div>
+        <div class="meta-group">
+          <span class="meta-label">{{ 'workspace.drawer_section' | translate }}</span>
+          <span class="meta-val">{{ selectedDrawerSource()?.sectionTitle || selectedDrawerSource()?.section_title }}</span>
+        </div>
+        <div class="meta-group">
+          <span class="meta-label">{{ 'workspace.drawer_page' | translate }}</span>
+          <span class="meta-val page-tag">{{ 'workspace.drawer_page' | translate }} {{ selectedDrawerSource()?.pageNumber || selectedDrawerSource()?.page_number }}</span>
+        </div>
+        @if (selectedDrawerSource()?.excerpt) {
+          <div class="excerpt-box">
+            <span class="meta-label">{{ 'workspace.drawer_excerpt' | translate }}</span>
+            <p class="excerpt-text">"{{ selectedDrawerSource()?.excerpt }}"</p>
+          </div>
+        }
+        @if ((selectedDrawerSource()?.sourceUrl && selectedDrawerSource()?.sourceUrl !== '#') || (selectedDrawerSource()?.source_url && selectedDrawerSource()?.source_url !== '#')) {
+          <div class="link-group">
+            <a [href]="selectedDrawerSource()?.sourceUrl || selectedDrawerSource()?.source_url" target="_blank" rel="noopener" class="btn-external-link">
+              {{ 'workspace.drawer_open' | translate }}
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  }
+  </main>
+  </div>
+</div>

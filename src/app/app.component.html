@@ -1,0 +1,80 @@
+<nav class="nav" id="nav" [class.scrolled]="isScrolled">
+  <div class="wrap nav-inner">
+    <a routerLink="/" class="nav-logo">
+      <span class="dot"></span>PostpartumHeal
+    </a>
+    <div class="nav-links">
+      <a href="#how" (click)="scrollTo('how', $event)">{{
+        "nav.how_it_works" | translate
+      }}</a>
+      <a routerLink="/evidence">{{ "nav.evidence" | translate }}</a>
+      <a routerLink="/workspace">{{ "nav.workspace" | translate }}</a>
+    </div>
+
+    <div class="nav-right-actions">
+      <!-- Language Switcher EN | AR -->
+      <div class="lang-switcher" role="group" aria-label="Language selector">
+        <button
+          type="button"
+          class="lang-btn"
+          [class.active]="i18n.currentLang() === 'en'"
+          (click)="i18n.setLanguage('en')"
+          aria-label="Switch language to English"
+        >
+          EN
+        </button>
+        <span class="lang-divider" aria-hidden="true">|</span>
+        <button
+          type="button"
+          class="lang-btn"
+          [class.active]="i18n.currentLang() === 'ar'"
+          (click)="i18n.setLanguage('ar')"
+          aria-label="التحويل إلى اللغة العربية"
+        >
+          AR
+        </button>
+      </div>
+
+      <ng-container *ngIf="!auth.isAuthenticated()">
+        <a routerLink="/login" class="nav-cta">{{
+          "nav.sign_in" | translate
+        }}</a>
+      </ng-container>
+      <ng-container *ngIf="auth.isAuthenticated()">
+        <a routerLink="/workspace" class="nav-cta btn-primary-nav">{{
+          "nav.workspace" | translate
+        }}</a>
+        <button type="button" class="nav-cta btn-logout" (click)="logout()">
+          {{ "nav.logout" | translate }}
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</nav>
+
+<main class="main-content" [class.is-auth]="isAuthPage">
+  <router-outlet></router-outlet>
+</main>
+
+<footer *ngIf="!isWorkspacePage">
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">PostpartumHeal</div>
+        <p class="footer-desc">{{ "footer.brand_desc" | translate }}</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>{{ "footer.product" | translate }}</h4>
+          <a routerLink="/evidence">{{ "nav.evidence" | translate }}</a>
+          <a href="#how" (click)="scrollTo('how', $event)">{{
+            "nav.how_it_works" | translate
+          }}</a>
+          <a routerLink="/workspace">{{ "nav.workspace" | translate }}</a>
+          <a routerLink="/login">{{ "nav.sign_in" | translate }}</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">{{ "footer.rights" | translate }}</div>
+  </div>
+</footer>

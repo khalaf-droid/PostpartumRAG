@@ -1,0 +1,347 @@
+<section class="hero">
+  <!-- Background illustration panel (right side, CSS background) -->
+  <div class="hero-bg-image" aria-hidden="true"></div>
+
+  <div class="wrap hero-inner">
+
+    <!-- LEFT: Copy -->
+    <div class="hero-copy hero-animate-copy">
+      <div class="eyebrow">{{ 'hero.eyebrow' | translate }}</div>
+      <h1>{{ 'hero.title_part1' | translate }}<br><em>{{ 'hero.title_highlight' | translate }}</em></h1>
+      <p class="hero-sub">{{ 'hero.subtitle' | translate }}</p>
+      <p class="hero-desc">{{ 'hero.description' | translate }}</p>
+      <div class="hero-ctas">
+        <a routerLink="/workspace" class="btn-primary">
+          <span>{{ 'hero.cta_primary' | translate }}</span>
+          <span class="cta-arrow" aria-hidden="true">{{ i18n.isRtl() ? '←' : '→' }}</span>
+        </a>
+        <a href="#how" (click)="scrollTo('how', $event)" class="btn-secondary">{{ 'hero.cta_secondary' | translate }}</a>
+      </div>
+    </div>
+
+    <!-- RIGHT: Floating Cards Stack (over background image) -->
+    <div class="hero-visual hero-animate-visual">
+
+      <!-- Card 1: Evidence Retrieved (top-left area) -->
+      <div class="fcard fcard--evidence float-a">
+        <div class="fcard-body">
+          <div class="fcard-label"><span class="fcard-pulse"></span>{{ 'hero.fcard_evidence_title' | translate | uppercase }}</div>
+          <div class="fcard-text">{{ 'hero.fcard_evidence_q' | translate }}</div>
+          <div class="fcard-chips">
+            <span class="fcard-chip">{{ 'hero.fcard_evidence_chip1' | translate }}</span>
+            <span class="fcard-chip">{{ 'hero.fcard_evidence_chip2' | translate }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Maternal Support (top-right) -->
+      <div class="fcard fcard--support float-b">
+        <div class="fcard-body">
+          <div class="fcard-label"><span class="fcard-pulse purple"></span>{{ 'hero.fcard_support_title' | translate | uppercase }}</div>
+          <div class="fcard-text">{{ 'hero.fcard_support_text' | translate }}</div>
+        </div>
+      </div>
+
+      <!-- Card 3: Early Detection (bottom-left) -->
+      <div class="fcard fcard--detect float-c">
+        <div class="fcard-body">
+          <div class="fcard-label"><span class="fcard-pulse sage"></span>{{ 'hero.fcard_detect_title' | translate | uppercase }}</div>
+          <div class="fcard-text">{{ 'hero.fcard_detect_text' | translate }}</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Grounded Answer (bottom-right) -->
+      <div class="fcard fcard--confidence float-d">
+        <div class="fcard-body">
+          <div class="fcard-label"><span class="fcard-pulse gold"></span>{{ 'workspace.grounded_tag' | translate | uppercase }}</div>
+          <div class="fcard-text">{{ 'hero.fcard_grounded_text' | translate }}</div>
+          <div class="fcard-source-row">
+            <span class="fcard-dot nice">NICE CG192</span>
+            <span class="fcard-dot who">WHO mhGAP</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="trust">
+  <div class="wrap">
+    
+    <!-- Section Header -->
+    <div class="trust-header reveal">
+      <div class="trust-eyebrow">{{ 'nav.evidence' | translate | uppercase }}</div>
+      <h2 class="trust-head">{{ 'landing.why_title' | translate }}</h2>
+      <p class="trust-sub">{{ 'landing.why_subtitle' | translate }}</p>
+    </div>
+
+    <!-- Traceability Path Chain -->
+    <div class="traceability-wrapper reveal">
+      <div class="traceability-path">
+        
+        <div class="trace-stage">
+          <div>
+            <span class="trace-num">01</span>
+            <div class="trace-label">{{ 'workspace.drawer_doc' | translate | uppercase }}</div>
+          </div>
+          <div class="trace-connector" aria-hidden="true">
+            <span class="trace-line"></span>
+            <span class="trace-arrow">{{ i18n.isRtl() ? '←' : '→' }}</span>
+          </div>
+        </div>
+
+        <div class="trace-stage">
+          <div>
+            <span class="trace-num">02</span>
+            <div class="trace-label">{{ 'workspace.drawer_section' | translate | uppercase }}</div>
+          </div>
+          <div class="trace-connector" aria-hidden="true">
+            <span class="trace-line"></span>
+            <span class="trace-arrow">{{ i18n.isRtl() ? '←' : '→' }}</span>
+          </div>
+        </div>
+
+        <div class="trace-stage">
+          <div>
+            <span class="trace-num">03</span>
+            <div class="trace-label">{{ 'workspace.drawer_page' | translate | uppercase }}</div>
+          </div>
+          <div class="trace-connector" aria-hidden="true">
+            <span class="trace-line"></span>
+            <span class="trace-arrow">{{ i18n.isRtl() ? '←' : '→' }}</span>
+          </div>
+        </div>
+
+        <div class="trace-stage trace-stage--final">
+          <div>
+            <span class="trace-num">04</span>
+            <div class="trace-label">{{ 'workspace.evidence_title' | translate | uppercase }}</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Source Cards -->
+    <div class="trust-sources-wrapper reveal">
+      <div class="trust-cards-grid">
+        
+        <!-- CARD 1: NICE CG192 -->
+        <div class="trust-source-card">
+          <div class="tsc-badge">{{ 'landing.trust_badge' | translate }}</div>
+          <h3 class="tsc-title">{{ 'landing.trust_nice_title' | translate }}</h3>
+          <p class="tsc-subtitle">{{ 'landing.trust_nice_sub' | translate }}</p>
+          <div class="tsc-meta">{{ 'landing.trust_nice_meta' | translate }}</div>
+          
+          <div class="tsc-preview">
+            <div class="tsc-preview-header">
+              <span class="tsc-preview-label">{{ 'landing.trust_trail_label' | translate }}</span>
+              <span class="tsc-preview-tag">{{ 'landing.trust_trail_tag' | translate }}</span>
+            </div>
+            <div class="tsc-preview-location">{{ 'landing.trust_nice_loc' | translate }}</div>
+          </div>
+
+          <a routerLink="/evidence" class="tsc-cta">
+            <span>{{ 'evidence.view_source' | translate }}</span>
+          </a>
+        </div>
+
+        <!-- CARD 2: WHO mhGAP -->
+        <div class="trust-source-card">
+          <div class="tsc-badge">{{ 'landing.trust_badge' | translate }}</div>
+          <h3 class="tsc-title">{{ 'landing.trust_who_title' | translate }}</h3>
+          <p class="tsc-subtitle">{{ 'landing.trust_who_sub' | translate }}</p>
+          <div class="tsc-meta">{{ 'landing.trust_who_meta' | translate }}</div>
+
+          <div class="tsc-preview">
+            <div class="tsc-preview-header">
+              <span class="tsc-preview-label">{{ 'landing.trust_trail_label' | translate }}</span>
+              <span class="tsc-preview-tag">{{ 'landing.trust_trail_tag' | translate }}</span>
+            </div>
+            <div class="tsc-preview-location">{{ 'landing.trust_who_loc' | translate }}</div>
+          </div>
+
+          <a routerLink="/evidence" class="tsc-cta">
+            <span>{{ 'evidence.view_source' | translate }}</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="hiw" id="how">
+  <div class="wrap">
+    
+    <!-- Section Header -->
+    <div class="hiw-head reveal">
+      <div class="hiw-eyebrow">PROCESS</div>
+      <h2 class="hiw-title">{{ 'landing.process_title' | translate }}</h2>
+      <p class="hiw-sub" style="color: var(--muted-light, rgba(246,244,238,.62)); font-size: 0.95rem; margin-top: 0.4rem;">
+        {{ 'landing.process_subtitle' | translate }}
+      </p>
+    </div>
+
+    <!-- 4-Stage Pipeline -->
+    <div class="hiw-pipeline reveal">
+      
+      <!-- STEP 01: ASK -->
+      <div class="hiw-stage">
+        <div class="hiw-stage-header">
+          <span class="hiw-num">01</span>
+          <span class="hiw-connector-line"></span>
+        </div>
+        <div class="hiw-stage-body">
+          <div class="hiw-visual-cue">
+            <span class="cue-token">?</span>
+            <span class="cue-label-tag">query.txt</span>
+          </div>
+          <h3 class="hiw-step-title">{{ 'landing.step1_title' | translate }}</h3>
+          <p class="hiw-step-desc">{{ 'landing.step1_desc' | translate }}</p>
+        </div>
+      </div>
+
+      <!-- STEP 02: RETRIEVE -->
+      <div class="hiw-stage">
+        <div class="hiw-stage-header">
+          <span class="hiw-num">02</span>
+          <span class="hiw-connector-line"></span>
+        </div>
+        <div class="hiw-stage-body">
+          <div class="hiw-visual-cue">
+            <div class="cue-passages">
+              <span class="cue-passage-line"></span>
+              <span class="cue-passage-line active"></span>
+              <span class="cue-passage-line"></span>
+            </div>
+            <span class="cue-arrow">{{ i18n.isRtl() ? '←' : '→' }}</span>
+            <span class="cue-node"></span>
+          </div>
+          <h3 class="hiw-step-title">{{ 'landing.step2_title' | translate }}</h3>
+          <p class="hiw-step-desc">{{ 'landing.step2_desc' | translate }}</p>
+        </div>
+      </div>
+
+      <!-- STEP 03: GROUND -->
+      <div class="hiw-stage">
+        <div class="hiw-stage-header">
+          <span class="hiw-num">03</span>
+          <span class="hiw-connector-line"></span>
+        </div>
+        <div class="hiw-stage-body">
+          <div class="hiw-visual-cue">
+            <div class="cue-ground-box">
+              <span class="cue-layer evidence">Evidence</span>
+              <span class="cue-plus">+</span>
+              <span class="cue-layer constraint">AI</span>
+            </div>
+          </div>
+          <h3 class="hiw-step-title">{{ 'landing.step3_title' | translate }}</h3>
+          <p class="hiw-step-desc">{{ 'landing.step3_desc' | translate }}</p>
+        </div>
+      </div>
+
+      <!-- STEP 04: CITE -->
+      <div class="hiw-stage hiw-stage--cite">
+        <div class="hiw-stage-header">
+          <span class="hiw-num">04</span>
+        </div>
+        <div class="hiw-stage-body">
+          <div class="hiw-visual-cue">
+            <div class="cue-citation-pair">
+              <span class="cue-cite-chip">[1] {{ i18n.isRtl() ? '←' : '→' }} p.18</span>
+              <span class="cue-cite-chip">[2] {{ i18n.isRtl() ? '←' : '→' }} p.72</span>
+            </div>
+          </div>
+          <h3 class="hiw-step-title">{{ 'landing.step4_title' | translate }}</h3>
+          <p class="hiw-step-desc">{{ 'landing.step4_desc' | translate }}</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="evidence-section" id="evidence">
+  <div class="wrap">
+    <div class="evidence-head reveal">
+      <div class="evidence-eyebrow">{{ 'workspace.grounded_tag' | translate | uppercase }}</div>
+      <h2 class="evidence-title">{{ 'landing.feature3_title' | translate }}</h2>
+    </div>
+    <div class="evidence-grid">
+      <div class="answer-panel reveal">
+        <div class="answer-q">{{ 'workspace.question_label' | translate }}</div>
+        <p style="font-family:var(--font-display); font-weight:560; font-size:1.3rem; margin-bottom:1.4rem;">{{ 'landing.evidence_section_q' | translate }}</p>
+        <p class="answer-text">
+          {{ 'landing.evidence_section_ans' | translate }} <span class="cite-mark" (click)="highlightSource(1, $event)">[1]</span>{{ 'landing.evidence_section_ans_cont' | translate }} <span class="cite-mark" (click)="highlightSource(2, $event)">[2]</span>.
+        </p>
+      </div>
+      <div class="evidence-panel reveal">
+        <div class="evidence-panel-label">{{ 'workspace.evidence_title' | translate }}</div>
+        <div class="evidence-item" id="src-1">
+          <div class="doc">NICE CG192</div>
+          <div class="sec">{{ 'landing.evidence_section_nice_sec' | translate }}</div>
+          <div class="pg">{{ 'landing.evidence_section_nice_pg' | translate }}</div>
+          <a href="https://www.nice.org.uk/guidance/cg192" target="_blank" rel="noopener" class="view-source">
+            <span>{{ 'evidence.view_source' | translate }}</span>
+          </a>
+        </div>
+        <div class="evidence-item" id="src-2">
+          <div class="doc">WHO mhGAP</div>
+          <div class="sec">{{ 'landing.evidence_section_who_sec' | translate }}</div>
+          <div class="pg">{{ 'landing.evidence_section_who_pg' | translate }}</div>
+          <a href="#" class="view-source" (click)="$event.preventDefault()">
+            <span>{{ 'evidence.view_source' | translate }}</span>
+          </a>
+        </div>
+        <div class="evidence-panel-footer">
+          <span>{{ 'landing.evidence_section_sources' | translate }}</span>
+          <a routerLink="/evidence" class="evidence-panel-link">
+            <span>{{ 'hero.cta_secondary' | translate }}</span>
+            <span class="arrow">{{ i18n.isRtl() ? '←' : '→' }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta" id="workspace">
+  <!-- Abstract Evidence Trace Background Motif -->
+  <div class="final-bg-trace" aria-hidden="true">
+    <div class="fbt-node">[1]</div>
+    <div class="fbt-line-v"></div>
+    <div class="fbt-cross">
+      <div class="fbt-line-h"></div>
+      <div class="fbt-node">[2]</div>
+    </div>
+    <div class="fbt-line-v"></div>
+    <div class="fbt-tag">Page 18</div>
+  </div>
+
+  <div class="wrap final-inner">
+    <div class="final-eyebrow reveal">{{ 'nav.workspace' | translate | uppercase }}</div>
+    <h2 class="reveal">{{ 'landing.cta_banner_title' | translate }}</h2>
+    <p class="final-sub reveal">{{ 'hero.subtitle' | translate }}</p>
+    
+    <div class="final-trust-cue reveal">
+      <span class="trust-dot"></span>NICE + WHO · {{ 'hero.metric1_lbl' | translate }}
+    </div>
+
+    <div class="final-ctas reveal">
+      <a routerLink="/workspace" class="btn-primary">
+        <span>{{ 'landing.cta_banner_btn' | translate }}</span>
+        <span class="cta-arrow" aria-hidden="true">{{ i18n.isRtl() ? '←' : '→' }}</span>
+      </a>
+      <a routerLink="/evidence" class="final-secondary-link">
+        <span>{{ 'hero.cta_secondary' | translate }}</span>
+        <span class="arrow">{{ i18n.isRtl() ? '←' : '→' }}</span>
+      </a>
+    </div>
+  </div>
+</section>

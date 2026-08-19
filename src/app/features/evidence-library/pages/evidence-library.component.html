@@ -1,0 +1,87 @@
+<div class="evidence-shell">
+  <!-- Brand Header -->
+  <header class="brand-header">
+    <div class="brand-title-group">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1>PostpartumRAG</h1>
+        <p class="tagline">{{ 'workspace.tagline' | translate }}</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Intro -->
+  <section class="hero-intro">
+    <h2 class="hero-title">{{ 'evidence.title' | translate }}</h2>
+    <p class="hero-sub">{{ 'evidence.subtitle' | translate }}</p>
+    <p class="hero-desc">{{ 'hero.description' | translate }}</p>
+  </section>
+
+  <!-- Search & Filter -->
+  <section class="search-filter-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [placeholder]="'evidence.search_placeholder' | translate" 
+        [ngModel]="evidenceService.searchQuery()"
+        (ngModelChange)="evidenceService.searchQuery.set($event)"
+      />
+    </div>
+    <div class="filters">
+      <button 
+        class="filter-btn" 
+        [class.active]="evidenceService.selectedFilter() === 'All'"
+        (click)="setFilter('All')">{{ 'evidence.all_categories' | translate }}</button>
+      <button 
+        class="filter-btn" 
+        [class.active]="evidenceService.selectedFilter() === 'NICE'"
+        (click)="setFilter('NICE')">{{ 'evidence.nice_category' | translate }}</button>
+      <button 
+        class="filter-btn" 
+        [class.active]="evidenceService.selectedFilter() === 'WHO'"
+        (click)="setFilter('WHO')">{{ 'evidence.who_category' | translate }}</button>
+    </div>
+  </section>
+
+  <!-- Source List -->
+  <section class="source-list">
+    <div class="source-grid">
+      @for (source of evidenceService.filteredSources(); track source.id) {
+        <div class="source-card">
+          <div class="card-org">{{ source.organization }}</div>
+          <h3 class="card-title">{{ source.title }}</h3>
+          
+          <div class="card-meta">
+            <span class="meta-tag">{{ source.type }}</span>
+            <span class="meta-tag indexed">{{ source.indexedStatus }}</span>
+          </div>
+          
+          <div class="traceability-info">
+            <div class="trace-row">
+              <span class="trace-label">{{ 'workspace.drawer_doc' | translate }} → {{ 'workspace.drawer_section' | translate }}</span>
+              <span class="trace-val">{{ source.sections.length }}</span>
+            </div>
+            <div class="trace-row">
+              <span class="trace-label">{{ 'workspace.drawer_page' | translate }}</span>
+              <span class="trace-val">{{ source.sections.length * 4 }}</span>
+            </div>
+            <div class="trace-row">
+              <span class="trace-label">{{ 'evidence.sections_count' | translate }}</span>
+              <span class="trace-val">{{ source.sections.length * 12 }}</span>
+            </div>
+          </div>
+          
+          <a [routerLink]="['/evidence', source.id]" class="btn-explore">
+            <span>{{ 'evidence.view_source' | translate }}</span>
+          </a>
+        </div>
+      }
+      
+      @if (evidenceService.filteredSources().length === 0) {
+        <div class="no-results">
+          <p>{{ 'workspace.no_evidence_title' | translate }}</p>
+        </div>
+      }
+    </div>
+  </section>
+</div>

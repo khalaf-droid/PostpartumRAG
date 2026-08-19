@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+/server/node_modules/
+/maternal_health_rag/venv/
+/maternal_health_rag/env/
+/maternal_health_rag/.venv/
+
+# Environment Variables
+.env
+.env.local
+.env.development
+.env.production
+/server/.env
+/maternal_health_rag/.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/maternal_health_rag/logs/
+/maternal_health_rag/logs/*.jsonl
+
+# Angular/Frontend Build Files
+dist/
+out-tsc/
+.angular/
+.cache/
+
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editor/IDE/OS specific
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

@@ -1,0 +1,35 @@
+/*
+  Design tokens for PostpartumRAG — "Thread of Evidence" identity.
+  Import this at the top of src/styles.scss:
+    @import 'styles-tokens';
+
+  Fonts (add to index.html <head>):
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+*/
+
+:root {
+  /* Color */
+  --ink: #2e2438;
+  --paper: #fbf7f2;
+  --plum: #6b5b95;
+  --sage: #7a9b76;
+  --brick: #b85c57;
+  --blush: #f2d9dd;
+
+  /* Type */
+  --font-display: 'Fraunces', 'Georgia', serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+}

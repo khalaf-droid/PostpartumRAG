@@ -1,0 +1,5 @@
+{
+  "message": "RAG API responded with status: 502 - {\"detail\":\"Answer generation failed: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-3.6-pro is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}\"}",
+  "stack": "Error: RAG API responded with status: 502 - {\"detail\":\"Answer generation failed: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-3.6-pro is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}\"}\n    at IncomingMessage.<anonymous> (file:///D:/postpartum-rag/server/services/chat.service.js:36:29)\n    at IncomingMessage.emit (node:events:521:24)\n    at endReadableNT (node:internal/streams/readable:1729:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)",
+  "name": "Error"
+}

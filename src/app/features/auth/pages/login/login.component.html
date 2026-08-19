@@ -1,0 +1,85 @@
+<app-auth-shell>
+  <div class="login-wrapper">
+    <header class="login-header">
+      <h1 class="login-title">{{ 'auth.login_title' | translate }}</h1>
+      <p class="login-subhead">
+        {{ 'auth.login_sub' | translate }}
+      </p>
+    </header>
+
+    <!-- Generic Error Alert -->
+    <div *ngIf="errorMessage" class="auth-alert error" role="alert">
+      <svg class="alert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+
+    <!-- Email/Password Form -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate class="auth-form">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email" class="form-label">{{ 'auth.email' | translate }}</label>
+        <div class="input-wrapper" [class.is-invalid]="(f['email'].touched || submitted) && f['email'].errors">
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            [placeholder]="'auth.placeholder_email' | translate"
+            class="form-input"
+            autocomplete="email"
+          />
+        </div>
+        <p *ngIf="(f['email'].touched || submitted) && f['email'].errors?.['required']" class="error-text">
+          {{ 'auth.email_required' | translate }}
+        </p>
+        <p *ngIf="(f['email'].touched || submitted) && f['email'].errors?.['email'] && !f['email'].errors['required']" class="error-text">
+          {{ 'auth.email_invalid' | translate }}
+        </p>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <app-password-field
+          [label]="'auth.password' | translate"
+          [placeholder]="'auth.placeholder_password' | translate"
+          formControlName="password"
+          [invalid]="(f['password'].touched || submitted) && !!f['password'].errors"
+          [touched]="f['password'].touched || submitted"
+          [errorMessage]="((f['password'].touched || submitted) && f['password'].errors?.['required']) ? ('auth.password_required' | translate) : ''"
+        ></app-password-field>
+        
+        <div class="form-options">
+          <a routerLink="/forgot-password" class="forgot-link">{{ 'auth.forgot_password' | translate }}</a>
+        </div>
+      </div>
+
+      <!-- Primary Action Button -->
+      <button
+        type="submit"
+        class="btn-submit"
+        [disabled]="isLoading"
+      >
+        <span *ngIf="!isLoading">{{ 'auth.sign_in' | translate }}</span>
+        <span *ngIf="isLoading" class="loading-state">
+          <span class="btn-spinner"></span>
+          {{ 'auth.signing_in' | translate }}
+        </span>
+      </button>
+    </form>
+
+    <!-- Navigation to Register -->
+    <div class="auth-switch-container">
+      <p class="auth-switch-text">
+        {{ 'auth.no_account' | translate }}
+        <a routerLink="/register" class="switch-link">
+          <span>{{ 'auth.create_account' | translate }}</span>
+          <span class="arrow">{{ i18n.isRtl() ? '←' : '→' }}</span>
+        </a>
+      </p>
+    </div>
+  </div>
+</app-auth-shell>

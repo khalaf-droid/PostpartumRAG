@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+knowledge_sections.json
+knowledge_sections_ready.json
+knowledge_sections_embedded.json
+.venv/
+venv/

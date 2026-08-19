@@ -1,0 +1,49 @@
+<div class="auth-page">
+  <div class="auth-container">
+    <!-- Left Column: Editorial Visual & Identity -->
+    <aside class="auth-visual-column">
+      <div class="visual-backdrop">
+        <img 
+          src="/assets/742e218e-1202-45e5-8ef1-8876b3f.png" 
+          alt="PostpartumRAG Maternal Health Evidence Visual" 
+          class="visual-img"
+        />
+        <div class="overlay-gradient"></div>
+      </div>
+
+      <div class="visual-content">
+        <app-auth-brand></app-auth-brand>
+
+        <div class="editorial-card">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            {{ 'auth.brand_card_badge' | translate }}
+          </div>
+          <p class="quote">
+            {{ 'auth.brand_card_quote' | translate }}
+          </p>
+          <div class="evidence-tags">
+            <span class="tag">{{ 'auth.brand_card_tag1' | translate }}</span>
+            <span class="tag">{{ 'auth.brand_card_tag2' | translate }}</span>
+            <span class="tag">{{ 'auth.brand_card_tag3' | translate }}</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Column: Form Container Card -->
+    <main class="auth-card-column">
+      <div class="mobile-brand-wrapper">
+        <app-auth-brand [centered]="true"></app-auth-brand>
+      </div>
+
+      <div class="auth-card">
+        <ng-content></ng-content>
+      </div>
+
+      <footer class="auth-micro-footer">
+        {{ 'footer.rights' | translate }}
+      </footer>
+    </main>
+  </div>
+</div>

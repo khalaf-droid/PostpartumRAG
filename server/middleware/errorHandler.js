@@ -1,53 +1,103 @@
+/**
+ * Global Error Handler — Security Hardened
+ *
+ * Security features:
+ * - Never exposes stack traces to clients (CWE-209)
+ * - Handles specific Mongoose/JWT errors gracefully
+ * - Structured logging instead of file-based error dumps
+ * - Prevents information leakage about internals
+ */
+
+const handleCastErrorDB = (err) => {
+  return { statusCode: 400, message: `Invalid ${err.path}: ${err.value}`, isOperational: true };
+};
+
+const handleDuplicateFieldDB = (err) => {
+  const field = Object.keys(err.keyValue || {})[0] || 'field';
+  return { statusCode: 400, message: `Duplicate value for ${field}. Please use another value.`, isOperational: true };
+};
+
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors || {}).map((el) => el.message);
+  return { statusCode: 400, message: `Invalid input: ${errors.join('. ')}`, isOperational: true };
+};
+
 export const errorHandler = (err, req, res, next) => {
-  let error = { ...err };
-  error.message = err.message;
+  let statusCode = err.statusCode || 500;
+  let message = err.message || 'Something went wrong';
+  let isOperational = err.isOperational || false;
 
+  // ── Handle specific error types ────────────────────────────
   if (err.name === 'JsonWebTokenError') {
-    error.statusCode = 401;
-    error.message = 'Invalid token. Please log in again!';
-    error.status = 'fail';
-    error.isOperational = true;
+    statusCode = 401;
+    message = 'Invalid token. Please log in again.';
+    isOperational = true;
   }
-  
+
   if (err.name === 'TokenExpiredError') {
-    error.statusCode = 401;
-    error.message = 'Your token has expired! Please log in again.';
-    error.status = 'fail';
-    error.isOperational = true;
+    statusCode = 401;
+    message = 'Your token has expired. Please log in again.';
+    isOperational = true;
   }
 
-  error.statusCode = error.statusCode || err.statusCode || 500;
-  error.status = error.status || err.status || 'error';
+  if (err.name === 'CastError') {
+    const handled = handleCastErrorDB(err);
+    statusCode = handled.statusCode;
+    message = handled.message;
+    isOperational = true;
+  }
 
-  try {
-    import('fs').then(fs => {
-      fs.writeFileSync('error_log.json', JSON.stringify({
-        message: err.message,
-        stack: err.stack,
-        name: err.name
-      }, null, 2));
+  if (err.code === 11000) {
+    const handled = handleDuplicateFieldDB(err);
+    statusCode = handled.statusCode;
+    message = handled.message;
+    isOperational = true;
+  }
+
+  if (err.name === 'ValidationError') {
+    const handled = handleValidationErrorDB(err);
+    statusCode = handled.statusCode;
+    message = handled.message;
+    isOperational = true;
+  }
+
+  // ── Structured server-side logging ─────────────────────────
+  // Only log unexpected errors (not validation/auth issues)
+  if (!isOperational) {
+    console.error('[ERROR]', {
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      path: req.originalUrl,
+      statusCode,
+      message: err.message,
+      // Stack trace only to server logs, NEVER to client
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
     });
-  } catch(e) {}
+  }
+
+  // ── Client response ────────────────────────────────────────
+  const status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
 
   if (process.env.NODE_ENV === 'development') {
-    res.status(error.statusCode).json({
-      status: error.status,
-      error: error,
-      message: error.message,
-      stack: err.stack,
+    // Development: show message but NOT full stack in response
+    res.status(statusCode).json({
+      status,
+      message,
+      // Only include error name in dev, not stack traces
+      errorType: err.name,
     });
   } else {
-    // Production
-    if (error.isOperational) {
-      res.status(error.statusCode).json({
-        status: error.status,
-        message: error.message,
+    // Production: only show message for operational errors
+    if (isOperational) {
+      res.status(statusCode).json({
+        status,
+        message,
       });
     } else {
-      console.error('ERROR 💥', err);
+      // Generic message for unexpected errors
       res.status(500).json({
         status: 'error',
-        message: 'Something went wrong!',
+        message: 'Something went wrong. Please try again later.',
       });
     }
   }

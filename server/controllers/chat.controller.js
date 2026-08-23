@@ -4,11 +4,24 @@ import { chatService } from '../services/chat.service.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 
+/**
+ * Chat Controller — Security Hardened
+ *
+ * Security features:
+ * - All inputs validated via Zod middleware in routes
+ * - User ownership enforced on all session operations
+ * - Query length capped to prevent API abuse
+ * - Pagination limits on message retrieval
+ */
+
 // @desc    Get all chat sessions for current user
 // @route   GET /api/chat/sessions
 // @access  Private
 export const getSessions = asyncHandler(async (req, res, next) => {
-  const sessions = await ChatSession.find({ user: req.user.id }).sort('-lastActivityAt');
+  const sessions = await ChatSession.find({ user: req.user.id })
+    .sort('-lastActivityAt')
+    .limit(50) // Cap results to prevent excessive DB reads
+    .select('title messageCount lastActivityAt createdAt'); // Only return needed fields
 
   res.status(200).json({
     status: 'success',
@@ -23,16 +36,19 @@ export const getSessions = asyncHandler(async (req, res, next) => {
 // @route   GET /api/chat/sessions/:id
 // @access  Private
 export const getSession = asyncHandler(async (req, res, next) => {
+  // req.params.id is already validated as ObjectId by Zod middleware
   const session = await ChatSession.findOne({
     _id: req.params.id,
-    user: req.user.id,
+    user: req.user.id, // Ownership check
   });
 
   if (!session) {
     return next(new ApiError(404, 'No session found with that ID'));
   }
 
-  const messages = await ChatMessage.find({ session: session._id }).sort('createdAt');
+  const messages = await ChatMessage.find({ session: session._id })
+    .sort('createdAt')
+    .limit(200); // Cap message retrieval
 
   res.status(200).json({
     status: 'success',
@@ -47,11 +63,8 @@ export const getSession = asyncHandler(async (req, res, next) => {
 // @route   POST /api/chat/query
 // @access  Private
 export const sendQuery = asyncHandler(async (req, res, next) => {
+  // Body is already validated by Zod middleware (question: 1-2000 chars, sessionId: ObjectId)
   const { question, sessionId } = req.body;
-
-  if (!question) {
-    return next(new ApiError(400, 'Please provide a question'));
-  }
 
   // 1) Find or create session
   let session;
@@ -63,14 +76,14 @@ export const sendQuery = asyncHandler(async (req, res, next) => {
       return next(new ApiError(404, 'Session not found'));
     }
     
-    // Fetch last 10 messages for conversation context (ignoring evidence/metadata to save bandwidth)
+    // Fetch last 10 messages for conversation context
     previousMessages = await ChatMessage.find({ session: session._id })
-      .sort({ createdAt: 1 }) // oldest first to maintain chronological order
+      .sort({ createdAt: 1 })
       .limit(10)
       .select('role content -_id');
 
   } else {
-    // Determine title from first few words of the question
+    // Determine title from first few words of the question (sanitized by Zod)
     const title = question.split(' ').slice(0, 5).join(' ') + '...';
     session = await ChatSession.create({
       user: req.user.id,
@@ -87,7 +100,6 @@ export const sendQuery = asyncHandler(async (req, res, next) => {
   });
 
   // 3) Call RAG pipeline adapter
-  // Pass previousMessages for context-aware generation
   const ragResponse = await chatService.processQuery(question, previousMessages);
 
   // 4) Save assistant response to DB
@@ -118,9 +130,10 @@ export const sendQuery = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/chat/sessions/:id
 // @access  Private
 export const deleteSession = asyncHandler(async (req, res, next) => {
+  // req.params.id is already validated as ObjectId by Zod middleware
   const session = await ChatSession.findOneAndDelete({
     _id: req.params.id,
-    user: req.user.id,
+    user: req.user.id, // Ownership check
   });
 
   if (!session) {

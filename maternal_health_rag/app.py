@@ -14,8 +14,11 @@ Interactive docs:
 """
 
 import json
+import logging
 import os
 import re
+import secrets
+from typing import Optional
 
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,14 +27,19 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Depends, Header, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field, field_validator
 
 from google import genai
 from google.genai import types
 
 from supabase import create_client
+
+# ── Structured Logging ─────────────────────────────────────
+logger = logging.getLogger("rag_api")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 
 # ============================================================
@@ -172,20 +180,55 @@ OUTSIDE_SCOPE_MESSAGE_EN = (
 # FASTAPI
 # ============================================================
 
+# Disable interactive docs in production (information disclosure)
+_is_prod = os.environ.get("ENV", "development").lower() == "production"
+
 app = FastAPI(
-    title="Maternal Mental Health RAG API"
+    title="Maternal Mental Health RAG API",
+    docs_url=None if _is_prod else "/docs",
+    redoc_url=None if _is_prod else "/redoc",
+    openapi_url=None if _is_prod else "/openapi.json",
 )
 
 
 # ============================================================
-# CORS
+# SECURITY HEADERS MIDDLEWARE
 # ============================================================
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    # Remove server header
+    if "server" in response.headers:
+        del response.headers["server"]
+    return response
+
+
+# ============================================================
+# CORS — RESTRICTED TO ALLOWED ORIGINS
+# ============================================================
+
+_allowed_origins = os.environ.get(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://localhost:4200,http://127.0.0.1:4200"
+).split(",")
+
+# Add production origins
+_allowed_origins.extend([
+    "https://postpartum-backend.onrender.com",
+])
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[o.strip() for o in _allowed_origins if o.strip()],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+    max_age=86400,
 )
 
 
@@ -235,10 +278,29 @@ def get_supabase_client():
 # ============================================================
 
 class AskRequest(BaseModel):
+    model_config = {"extra": "forbid"}
 
-    question: str
+    question: str = Field(
+        ...,
+        min_length=1,
+        max_length=2000,
+        description="The user's question (1-2000 characters)",
+    )
 
-    top_k: int = 8
+    top_k: int = Field(
+        default=8,
+        ge=1,
+        le=15,
+        description="Number of chunks to retrieve (1-15)",
+    )
+
+    @field_validator("question")
+    @classmethod
+    def validate_question(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Question cannot be empty")
+        return v
 
 
 class SourceItem(BaseModel):
@@ -518,12 +580,34 @@ def health_check():
 
 
 # ============================================================
+# INTERNAL AUTHENTICATION
+# ============================================================
+
+def verify_internal_api_key(request: Request):
+    expected_api_key = os.environ.get("INTERNAL_API_KEY")
+    
+    if not expected_api_key:
+        logger.error("INTERNAL_API_KEY environment variable is not set!")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Server configuration error"
+        )
+        
+    x_internal_api_key = request.headers.get("x-internal-api-key")
+    if not x_internal_api_key or not secrets.compare_digest(x_internal_api_key, expected_api_key):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing internal API key"
+        )
+
+# ============================================================
 # ASK
 # ============================================================
 
 @app.post(
     "/ask",
-    response_model=AskResponse
+    response_model=AskResponse,
+    dependencies=[Depends(verify_internal_api_key)]
 )
 def ask(request: AskRequest):
 
@@ -536,6 +620,24 @@ def ask(request: AskRequest):
         raise HTTPException(
             status_code=400,
             detail="Question is empty"
+        )
+
+    # --------------------------------------------------------
+    # Deterministic Mock for Test Environments
+    # --------------------------------------------------------
+    if os.environ.get("TEST_MODE") == "true":
+        return AskResponse(
+            answer="This is a deterministic mock answer for security testing.",
+            confidence="High",
+            sources=[
+                SourceItem(
+                    source="Mock Security Document",
+                    section="1.0",
+                    page=1,
+                    excerpt="This mock excerpt proves the authentication architecture works.",
+                    similarity=0.99
+                )
+            ]
         )
 
     gemini_client = (
@@ -561,9 +663,10 @@ def ask(request: AskRequest):
 
     except Exception as e:
 
+        logger.error(f"Retrieval failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=502,
-            detail=f"Retrieval failed: {e}"
+            detail="Evidence retrieval temporarily unavailable. Please try again."
         )
 
     # --------------------------------------------------------
@@ -673,11 +776,10 @@ User question:
 
     except Exception as e:
 
+        logger.error(f"Answer generation failed: {e}", exc_info=True)
         raise HTTPException(
             status_code=502,
-            detail=(
-                f"Answer generation failed: {e}"
-            )
+            detail="Answer generation temporarily unavailable. Please try again."
         )
 
     reply_text = response.text

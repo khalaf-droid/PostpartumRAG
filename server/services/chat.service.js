@@ -107,7 +107,7 @@ class ChatService {
           question: sanitizedQuestion,
           top_k: Math.min(Math.max(options.topK || 8, 1), 15), // Clamp 1-15
         }),
-        signal: AbortSignal.timeout(30000), // 30s timeout (reduced from 60s)
+        signal: AbortSignal.timeout(90000), // 90s timeout (LLM is taking ~50s)
       });
 
       if (!response.ok) {

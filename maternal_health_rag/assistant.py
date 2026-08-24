@@ -43,7 +43,7 @@ from supabase import create_client
 # ============================================================
 
 EMBED_MODEL = "gemini-embedding-001"
-CHAT_MODEL = "gemini-2.5-flash"
+CHAT_MODEL = "gemini-3.6-flash"
 
 LOG_PATH = Path(__file__).parent / "logs" / "interaction_log.jsonl"
 

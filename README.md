@@ -223,9 +223,26 @@ This project is licensed under the **MIT License** – see the `LICENSE` file fo
 
 #### 🎨 Visual Assets
 - The mermaid diagrams above can be exported as PNG/SVG for the final README.
-- If you have exported graphics from the Miro board, drop them in the `assets/` folder and reference them like:
-  ```markdown
-  ![Architecture Overview](assets/architecture.png)
-  ```
+### 📊 Miro Board Diagrams
+
+#### Full System Architecture (Top)
+![Full System Architecture – Top](C:/Users/ElRaed/.gemini/antigravity/brain/3865662a-dc55-4ad0-9bc3-c70ddf6e6091/full_system_architecture_top_1787521217441.png)
+
+#### Full System Architecture (Bottom)
+![Full System Architecture – Bottom](C:/Users/ElRaed/.gemini/antigravity/brain/3865662a-dc55-4ad0-9bc3-c70ddf6e6091/full_system_architecture_bottom_1787521360406.png)
+
+#### RAG Serving Pipeline (Top)
+![RAG Pipeline – Serving (Top)](C:/Users/ElRaed/.gemini/antigravity/brain/3865662a-dc55-4ad0-9bc3-c70ddf6e6091/rag_pipeline_serving_top_1787518973982.png)
+
+#### Data Preparation & Ingestion Pipeline
+![Data Preparation Pipeline](C:/Users/ElRaed/.gemini/antigravity/brain/3865662a-dc55-4ad0-9bc3-c70ddf6e6091/data_preparation_pipeline_1787519818404.png)
+
+#### Query & Ingestion Flowcharts (Top)
+![Query Flowchart – Top](C:/Users/ElRaed/.gemini/antigravity/brain/3865662a-dc55-4ad0-9bc3-c70ddf6e6091/query_flowcharts_top_1787521664381.png)
+
+#### Testing & Evaluation
+![Testing & Evaluation](C:/Users/ElRaed/.gemini/antigravity/brain/3865662a-dc55-4ad0-9bc3-c70ddf6e6091/testing_and_evaluation_1787519342872.png)
+
+> All diagrams were captured from the shared Miro board and saved as high‑resolution PNGs. Feel free to copy them into an `assets/` folder for a cleaner repository layout.
 
 *Happy coding and thank you for contributing to safer AI‑driven healthcare!*

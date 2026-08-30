@@ -3,6 +3,26 @@
 > **Evidence‑grounded Retrieval‑Augmented Generation (RAG) for postpartum mental‑health support**
 
 ---
+**PostpartumRAG** is an evidence-grounded **Retrieval-Augmented Generation (RAG)** application designed to provide reliable, context-aware responses to postpartum mental-health questions.
+
+The system combines **Large Language Models (LLMs), semantic search, vector databases, and a secure full-stack architecture** to retrieve relevant information from a trusted knowledge base before generating an answer.
+
+Unlike a traditional chatbot that relies only on an LLM's internal knowledge, PostpartumRAG retrieves relevant evidence and uses that context to generate responses with supporting sources.
+
+### 🚀 Key Features
+
+* 🤖 **RAG-Powered AI Chatbot** – Generates responses using retrieved evidence from a specialized knowledge base.
+* 📚 **Evidence-Grounded Responses** – Retrieves relevant information before generating an answer.
+* 🔎 **Semantic Search** – Uses vector similarity search to identify relevant knowledge sections.
+* 🧠 **Gemini LLM Integration** – Generates contextual responses using retrieved information.
+* 📑 **Source Citations** – Returns supporting evidence alongside generated responses.
+* 🔐 **JWT Authentication** – Secure authentication between users and backend services.
+* 🛡️ **Zero-Trust Architecture** – Protects communication between the API Gateway and internal RAG engine.
+* 🚦 **Rate Limiting** – Helps protect the API from excessive requests.
+* 💬 **Chat History** – Stores user sessions and conversations.
+* 🧪 **Security Testing** – Includes automated security and backend testing.
+* 🚀 **Deployment Ready** – Supports containerized deployment and CI/CD workflows.
+
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -17,7 +37,85 @@
 10. [Contributing](#contributing)
 11. [License](#license)
 
----
+
+### 🏗️ System Architecture
+
+The application is divided into three main services:
+
+**1. Angular Frontend**
+
+* Provides the user interface and chat experience.
+* Built using Angular 17, TypeScript, and SCSS.
+
+**2. Node.js / Express API Gateway**
+
+* Handles authentication and API requests.
+* Validates JWT tokens.
+* Applies rate limiting.
+* Acts as the secure communication layer between the frontend and RAG engine.
+
+**3. FastAPI RAG Engine**
+
+* Handles retrieval and response generation.
+* Performs semantic vector search.
+* Retrieves relevant knowledge sections.
+* Sends retrieved context to the LLM.
+* Returns generated answers together with evidence.
+
+This architecture separates the presentation, API, and AI layers while restricting direct external access to the RAG engine.
+
+### 🔄 RAG Workflow
+
+**User Question → Angular Frontend → Express API Gateway → FastAPI RAG Engine → Vector Search → Retrieved Evidence → Gemini LLM → Answer + Sources → User**
+
+The RAG engine retrieves relevant sections from the vector database and provides them as context to the LLM before generating the final response.
+
+### 🛠️ Technologies
+
+* **Frontend:** Angular 17, TypeScript, SCSS
+* **Backend:** Node.js, Express.js
+* **AI / RAG:** Python, FastAPI, Retrieval-Augmented Generation
+* **LLM:** Google Gemini
+* **Vector Database:** Supabase PostgreSQL + pgvector
+* **Database:** MongoDB Atlas
+* **Authentication:** JWT
+* **Testing:** Jest, Python security tests
+* **DevOps:** Docker, GitHub Actions, Render
+* **Version Control:** Git & GitHub
+
+### 🔐 Security
+
+Security is a major component of the system architecture.
+
+The application implements:
+
+* JWT-based authentication
+* Internal API authentication
+* Zero-trust service communication
+* Rate limiting
+* Environment-based secret management
+* Security regression testing
+* Separation between the public API gateway and internal RAG service
+
+These controls help prevent unauthorized direct access to the AI backend and protect communication between system components.
+
+### 🎯 Objective
+
+The main objective of PostpartumRAG is to demonstrate how **Retrieval-Augmented Generation can be used to build more reliable and evidence-grounded AI assistants**.
+
+The project focuses on reducing unsupported or hallucinated responses by retrieving relevant information from a dedicated knowledge base and providing that context to the LLM during response generation.
+
+### 💡 Skills Demonstrated
+
+This project demonstrates practical experience in:
+
+**RAG • LLMs • Prompt Engineering • Semantic Search • Vector Databases • NLP • Generative AI • FastAPI • Node.js • Angular • REST APIs • Authentication • Cybersecurity • Database Integration • Docker • CI/CD**
+
+### ⚠️ Responsible AI
+
+Because the application addresses postpartum mental-health topics, it should be treated as an **informational AI assistant rather than a replacement for qualified healthcare professionals**.
+
+The use of retrieval and evidence citation is intended to improve transparency and grounding, but AI-generated information should still be evaluated carefully.
 
 ## Project Overview
 PostpartumRAG is a **clinical‑grade, evidence‑grounded chatbot** that assists new parents with postpartum mental‑health questions. It stitches together three tightly coupled services:
